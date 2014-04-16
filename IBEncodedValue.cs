@@ -57,12 +57,6 @@ namespace BEncoding.NET {
         /// <returns></returns>
         public abstract int Encode(byte[] buffer, int offset);
 
-        public static T Clone<T>(T value)
-            where T : BEncodedValue {
-            Check.Value(value);
-            return (T) Decode(value.Encode());
-        }
-
         /// <summary>
         /// Interface for all BEncoded values
         /// </summary>
@@ -74,10 +68,6 @@ namespace BEncoding.NET {
 
             using(RawReader stream = new RawReader(new MemoryStream(data)))
                 return (Decode(stream));
-        }
-
-        internal static BEncodedValue Decode(byte[] buffer, bool strictDecoding) {
-            return Decode(buffer, 0, buffer.Length, strictDecoding);
         }
 
         public static BEncodedValue Decode(byte[] buffer, int offset, int length, bool strictDecoding = true) {
@@ -118,7 +108,10 @@ namespace BEncoding.NET {
                 throw new ArgumentNullException("reader");
 
             BEncodedValue data;
-            switch(reader.PeekByte()) {
+
+            int peekByte = reader.PeekByte();
+
+            switch(peekByte) {
                 case ('i'):                         // Integer
                     data = new BEncodedNumber();
                     break;
